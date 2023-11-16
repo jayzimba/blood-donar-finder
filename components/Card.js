@@ -3,7 +3,7 @@ import React from "react";
 import colors from "../assets/Theme.js/colors";
 import { useNavigation } from "@react-navigation/native";
 
-const Card = () => {
+const Card = (props) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity
@@ -16,7 +16,13 @@ const Card = () => {
         borderRadius: 10,
         marginBottom: 20,
       }}
-      onPress={() => navigation.navigate("Request")}
+      onPress={() =>
+        navigation.navigate("Request", {
+          id: props.id,
+          name: props.name,
+          address: props.address,
+        })
+      }
     >
       <View
         style={{
@@ -29,17 +35,19 @@ const Card = () => {
           marginEnd: 20,
         }}
       >
-        <Text style={{ color: colors.white, fontSize: 18 }}>AB-</Text>
+        <Text style={{ color: colors.white, fontSize: 18 }}>
+          {props.blood_group}
+        </Text>
       </View>
       <View>
         <View>
           <Text
             style={{ color: colors.black, fontWeight: "500", fontSize: 18 }}
           >
-            Ndola Teaching Hospital
+            {props.name}
           </Text>
           <Text style={{ color: colors.gray, fontWeight: "300", fontSize: 18 }}>
-            President Avenue
+            {props.address}
           </Text>
         </View>
         <View style={{ justifyContent: "space-between" }}>

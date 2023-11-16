@@ -1,22 +1,42 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
 import colors from "../assets/Theme.js/colors";
 import { TextInput } from "react-native-gesture-handler";
 import { AntDesign } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 
 const Home = ({ navigation }) => {
+  const [blood_group, setblood_group] = useState("");
+  const [address, setAddress] = useState("");
+
+  // useEffect(() => {
+  //   fetchData();
+  //   fetchData();
+  // }, []);
+
   return (
     <View style={styles.container}>
       <View>
         <Text style={styles.label}>Blood group</Text>
         <View style={styles.inputContainer}>
-          <TextInput placeholder="AB-" selectionColor={colors.primary} />
+          <TextInput
+            value={blood_group}
+            placeholder="AB-"
+            selectionColor={colors.primary}
+            onChangeText={(text) => setblood_group(text)}
+            autoCapitalize="words"
+          />
           <AntDesign name="edit" size={24} color={colors.primary} />
         </View>
-        <Text style={[styles.label, { marginTop: 20 }]}>Donation type</Text>
+        <Text style={[styles.label, { marginTop: 20 }]}>location</Text>
         <View style={styles.inputContainer}>
-          <TextInput placeholder="AB-" selectionColor={colors.primary} />
+          <TextInput
+            value={address}
+            placeholder="loation"
+            selectionColor={colors.primary}
+            onChangeText={(text) => setAddress(text)}
+            autoCapitalize="none"
+          />
           <AntDesign name="edit" size={24} color={colors.primary} />
         </View>
       </View>
@@ -31,57 +51,6 @@ const Home = ({ navigation }) => {
         </Text>
       </View>
 
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginVertical: 30,
-        }}
-      >
-        <View
-          style={[
-            styles.inputContainer,
-            {
-              width: "20%",
-              borderRadius: 20,
-              justifyContent: "center",
-              alignItems: "center",
-              marginEnd: 10,
-            },
-          ]}
-        >
-          <TextInput
-            placeholder="0"
-            selectionColor={colors.primary}
-            style={{
-              fontSize: 22,
-              padding: 0,
-            }}
-          />
-        </View>
-
-        <Text
-          style={{ fontSize: 22, fontWeight: "bold", color: colors.primary }}
-        >
-          -
-        </Text>
-
-        <View
-          style={[
-            styles.inputContainer,
-            {
-              width: "30%",
-              borderRadius: 20,
-              justifyContent: "center",
-              alignItems: "center",
-              marginHorizontal: 10,
-            },
-          ]}
-        >
-          <Text style={{ fontSize: 16 }}>1000</Text>
-        </View>
-      </View>
-
       <TouchableOpacity
         style={{
           justifyContent: "center",
@@ -89,8 +58,14 @@ const Home = ({ navigation }) => {
           backgroundColor: colors.primary,
           padding: 15,
           borderRadius: 20,
+          marginTop: 40,
         }}
-        onPress={() => navigation.navigate("Donors")}
+        onPress={() =>
+          navigation.navigate("Donors", {
+            blood_group: blood_group,
+            address: address,
+          })
+        }
       >
         <Text
           style={[

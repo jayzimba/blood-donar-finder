@@ -1,29 +1,37 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import colors from "../assets/Theme.js/colors";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import * as Location from "expo-location";
 
 const Acceptance = () => {
+  const route = useRoute();
+  const { id } = route.params;
+  const navigation = useNavigation();
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
+    const fetchLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        console.error("Location permission not granted");
+        return;
+      }
+
+      try {
+        const location = await Location.getCurrentPositionAsync({});
+        setLocation(location.coords);
+        console.log(location);
+      } catch (error) {
+        console.error("Error fetching location:", error);
+      }
+    };
+
     fetchLocation();
   }, []);
 
-  const fetchLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setErrorMsg("Permission to access location was denied");
-      return;
-    }
-
-    const location = await Location.getCurrentPositionAsync({});
-    setLocation(location.coords); // Store latitude and longitude in state
-  };
-
-  const navigation = useNavigation();
   return (
     <View>
       <View
@@ -42,33 +50,6 @@ const Acceptance = () => {
             Thank you for accepting the blood donation request
           </Text>
         </View>
-        <Text style={{ color: colors.black, fontSize: 16, fontWeight: "500" }}>
-          Blood donation Details
-        </Text>
-        <View style={{ marginVertical: 15 }}>
-          <Text
-            style={{ color: colors.black, fontSize: 14, fontWeight: "300" }}
-          >
-            Name
-          </Text>
-          <Text
-            style={{ color: colors.black, fontSize: 16, fontWeight: "500" }}
-          >
-            UTH Blood Bank
-          </Text>
-        </View>
-        <View style={{ marginTop: 10 }}>
-          <Text
-            style={{ color: colors.black, fontSize: 14, fontWeight: "300" }}
-          >
-            Donation Type
-          </Text>
-          <Text
-            style={{ color: colors.black, fontSize: 16, fontWeight: "500" }}
-          >
-            FREE
-          </Text>
-        </View>
       </View>
       <View style={{ justifyContent: "center", marginVertical: 60 }}>
         <TouchableOpacity
@@ -80,8 +61,10 @@ const Acceptance = () => {
             borderRadius: 5,
             marginHorizontal: 80,
           }}
-          onPress={() => fetchLocation()}
-          //   onPress={() => navigation.navigate("Map")}
+          // onPress={() => fetchLocation()}
+          onPress={() =>
+            navigation.navigate("Directions", { location: location, id: id })
+          }
         >
           <Text
             style={[

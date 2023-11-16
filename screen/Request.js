@@ -4,10 +4,46 @@ import colors from "../assets/Theme.js/colors";
 import Donors from "./Donors";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
+import { Alert } from "react-native";
+import { ActivityIndicator } from "react-native";
 
 const Request = () => {
-
+  const route = useRoute();
+  const { id, name, address } = route.params;
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+
+  const insertDonation = async () => {
+    setLoading(true);
+    var formdata = new FormData();
+    formdata.append("donorID", id);
+    formdata.append("hospitalID", 1);
+
+    var requestOptions = {
+      method: "POST",
+      body: formdata,
+      redirect: "follow",
+    };
+
+    try {
+      const response = await fetch(
+        "https://www.pezabond.com/dalitso/insertDonation.php",
+        requestOptions
+      );
+      const data = await response.json();
+      console.log(data);
+      if (data[0].Message == "Added successfuly!") {
+        Alert.alert("Request Accepted");
+        navigation.navigate("Acceptance", { id: id });
+      } else if (data[0].Message == "Error - Try again") {
+        Alert.alert("Request Desclined");
+      }
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View style={styles.container}>
       <View
@@ -54,19 +90,19 @@ const Request = () => {
           <Text
             style={{ color: colors.black, fontSize: 16, fontWeight: "500" }}
           >
-            UTH Blood Bank
+            {name}
           </Text>
         </View>
         <View style={{ marginTop: 10 }}>
           <Text
             style={{ color: colors.black, fontSize: 14, fontWeight: "300" }}
           >
-            Donation Type
+            Address
           </Text>
           <Text
             style={{ color: colors.black, fontSize: 16, fontWeight: "500" }}
           >
-            FREE
+            {address}
           </Text>
         </View>
       </View>
@@ -107,7 +143,7 @@ const Request = () => {
             borderRadius: 5,
             width: "48%",
           }}
-          onPress={() => navigation.navigate("Acceptance")}
+          onPress={() => insertDonation()}
         >
           <Text
             style={[
@@ -119,6 +155,13 @@ const Request = () => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {loading && (
+        <ActivityIndicator
+          color={colors.danger}
+          style={{ marginVertical: 60 }}
+        />
+      )}
     </View>
   );
 };
